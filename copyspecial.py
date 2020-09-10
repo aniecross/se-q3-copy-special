@@ -7,7 +7,9 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 
 # give credits
-__author__ = "???"
+__author__ = """Anie Cross with help from instructor demo recordings,
+Group-B discussion topics, google.com search, docs.python.org,
+stackoverflow.com, google-python-class, received additional help from Hpost"""
 
 import re
 import os
@@ -19,18 +21,35 @@ import argparse
 
 def get_special_paths(dirname):
     """Given a dirname, returns a list of all its special files."""
-    # your code here
-    return
+    list = []
+    paths = os.listdir(dirname)
+    for file_name in paths:
+        match = re.search(r'__(\w+)__', file_name)
+        if match:
+            list.append(os.path.abspath(os.path.join(dirname, file_name)))
+    return list
 
 
 def copy_to(path_list, dest_dir):
-    # your code here
-    return
+    """Given a list of files copies to a new directory."""
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    for path in path_list:
+        file_name = os.path.basename(path)
+        current_path = os.path.dirname(path)
+        new_path = os.path.join(current_path, dest_dir, file_name)
+        shutil.copy(path, new_path)
 
 
 def zip_to(path_list, dest_zip):
-    # your code here
-    return
+    """Given list of files, adds them to zip files."""
+    file_list = ''
+    for path in path_list:
+        file_list += path + " "
+    try:
+        subprocess.call(['zip', '-j', dest_zip] + path_list)
+    except OSError as e:
+        print(e)
 
 
 def main(args):
@@ -39,9 +58,9 @@ def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
+    parser.add_argument('from_dir', help='dictionary to search for files')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     ns = parser.parse_args(args)
-
     # TODO: you must write your own code to get the command line args.
     # Read the docs and examples for the argparse module about how to do this.
 
@@ -51,6 +70,19 @@ def main(args):
     # exit(1).
 
     # Your code here: Invoke (call) your functions
+
+    if not ns:
+        sys.exit(1)
+
+    if ns.todir:
+        copy_to(get_special_paths(ns.from_dir), ns.todir)
+
+    elif ns.tozip:
+        zip_to(get_special_paths(ns.from_dir), ns.tozip)
+    else:
+        path_list = get_special_paths(ns.from_dir)
+        for path in path_list:
+            print(path)
 
 
 if __name__ == "__main__":
