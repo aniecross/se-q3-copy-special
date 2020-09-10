@@ -31,17 +31,24 @@ def get_special_paths(dirname):
 
 
 def copy_to(path_list, dest_dir):
+    """Given a list of files copies to a new directory."""
     if not os.path.exists(dest_dir):
-        os.mkdir(path_list, dest_dir)
+        os.makedirs(dest_dir)
     for path in path_list:
         file_name = os.path.basename(path)
-        shutil.copy(path, os.path.join(path_list, dest_dir, file_name))
-    return path_list, dest_dir
+        current_path = os.path.dirname(path)
+        new_path = os.path.join(current_path, dest_dir, file_name)
+        shutil.copy(path, new_path)
 
 
 def zip_to(path_list, dest_zip):
-    cmd = 'zip-j' + dest_zip + '' + ''.join(path_list)
-    print("Command I am going to do:") + cmd
+    file_list = ''
+    for path in path_list:
+        file_list += path + " "
+    try:
+        subprocess.call(['zip', '-j', dest_zip] + path_list)
+    except OSError as e:
+        print(e)
 
 
 def main(args):
@@ -52,7 +59,6 @@ def main(args):
     parser.add_argument('--tozip', help='dest zipfile for special files')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     ns = parser.parse_args(args)
-
     # TODO: you must write your own code to get the command line args.
     # Read the docs and examples for the argparse module about how to do this.
 
@@ -62,6 +68,19 @@ def main(args):
     # exit(1).
 
     # Your code here: Invoke (call) your functions
+
+    if not ns:
+        sys.exit(1)
+
+    if ns.todir:
+        copy_to(get_special_paths(ns.from_dir), ns.todir)
+
+    elif ns.tozip:
+        zip_to(get_special_paths(ns.from_dir), ns.tozip)
+    else:
+        path_list = get_special_paths(ns.from_dir)
+        for path in path_list:
+            print(path)
 
 
 if __name__ == "__main__":
