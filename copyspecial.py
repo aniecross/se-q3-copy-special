@@ -9,7 +9,7 @@
 # give credits
 __author__ = """Anie Cross with help from instructor demo recordings,
 Group-B discussion topics, google.com search, docs.python.org,
-stackoverflow.com, google-python-class"""
+stackoverflow.com, google-python-class, received additional help from Hpost"""
 
 import re
 import os
@@ -42,6 +42,7 @@ def copy_to(path_list, dest_dir):
 
 
 def zip_to(path_list, dest_zip):
+    """Given list of files, adds them to zip files."""
     file_list = ''
     for path in path_list:
         file_list += path + " "
@@ -57,6 +58,7 @@ def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
+    parser.add_argument('from_dir', help='dictionary to search for files')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     ns = parser.parse_args(args)
     # TODO: you must write your own code to get the command line args.
